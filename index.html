@@ -1,1 +1,1014 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giao diện Đăng Ký Người Dùng | UI/UX Design System</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+            },
+            success: {
+              500: '#10b981',
+              600: '#059669',
+            },
+            danger: {
+              500: '#ef4444',
+              600: '#dc2626',
+            }
+          },
+          boxShadow: {
+            'custom': '0 20px 35px -10px rgba(37, 99, 235, 0.08), 0 10px 15px -3px rgba(0, 0, 0, 0.05)',
+            'focus-brand': '0 0 0 3px rgba(37, 99, 235, 0.25)',
+            'focus-error': '0 0 0 3px rgba(239, 68, 68, 0.25)',
+            'focus-success': '0 0 0 3px rgba(16, 185, 129, 0.25)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Chống giật trang và tối ưu rendering font chữ */
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Animation cho dấu tích xanh trang thành công */
+    @keyframes checkmark-circle {
+      0% { stroke-dashoffset: 200; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @keyframes checkmark-check {
+      0% { stroke-dashoffset: 50; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .animate-checkmark-circle {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: checkmark-circle 0.6s ease-in-out forwards;
+    }
+    .animate-checkmark-check {
+      stroke-dasharray: 50;
+      stroke-dashoffset: 50;
+      animation: checkmark-check 0.4s ease-in-out 0.4s forwards;
+    }
 
+    /* Hiệu ứng rung nhẹ khi form có lỗi */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake {
+      animation: shake 0.35s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 min-h-screen font-sans text-slate-800 antialiased flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+  <!-- Header / UX Demo Helper Bar -->
+  <header class="w-full bg-white/80 backdrop-blur border-b border-slate-200/80 sticky top-0 z-30 px-4 py-2.5">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
+      <div class="flex items-center space-x-2">
+        <span class="inline-flex items-center justify-center p-1.5 bg-brand-50 text-brand-600 rounded-lg">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+        </span>
+        <span class="font-semibold text-slate-700">UI/UX Prototype Demo</span>
+        <span class="hidden md:inline text-slate-400">|</span>
+        <span class="hidden md:inline text-slate-500">Báo cáo Thiết kế Trang Đăng ký</span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button type="button" id="btn-demo-fill" class="px-2.5 py-1.5 text-xs font-medium rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center gap-1.5" title="Điền sẵn dữ liệu mẫu">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          Điền mẫu
+        </button>
+        <button type="button" id="btn-toggle-screen" class="px-2.5 py-1.5 text-xs font-medium rounded-md bg-brand-50 text-brand-700 border border-brand-200 hover:bg-brand-100 transition-colors flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+          </svg>
+          <span id="label-toggle-screen">Xem Trang 2 (Thành Công)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-14 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    
+    <!-- CONTAINER CHUNG CĂN GIỮA (480px theo chuẩn tài liệu) -->
+    <div class="w-full max-w-[480px] mx-auto">
+      
+      <!-- LOGO THƯƠNG HIỆU -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 to-blue-400 text-white shadow-lg shadow-brand-500/25 mb-3 transform hover:rotate-6 transition-transform">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">NovaSphere Cloud</h1>
+        <p class="text-xs text-slate-500 mt-0.5">Nền tảng kiến tạo tương lai số</p>
+      </div>
+
+      <!-- CARD 1: FORM ĐĂNG KÝ (REGISTRATION FORM PAGE) -->
+      <div id="page-registration" class="bg-white rounded-2xl border border-slate-200/80 shadow-custom p-6 sm:p-8 transition-all duration-300">
+        
+        <!-- Header của Form -->
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Tạo tài khoản mới</h2>
+          <p class="text-sm text-slate-500 mt-1.5">Chào mừng bạn! Vui lòng điền thông tin bên dưới.</p>
+        </div>
+
+        <!-- Social Login Buttons (Theo wireframe: Đặt lên đầu, rút ngắn thời gian thao tác) -->
+        <div class="space-y-2.5 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Google SSO Button -->
+            <button type="button" onclick="handleSocialLogin('Google')" class="flex items-center justify-center h-12 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition-all duration-200 hover:border-slate-300 active:scale-[0.98] shadow-sm">
+              <svg class="w-5 h-5 mr-2.5 shrink-0" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.27a7.17 7.17 0 0 1 0-4.54V6.58H1.25a11.96 11.96 0 0 0 0 10.84l4.03-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+              </svg>
+              <span>Google</span>
+            </button>
+
+            <!-- Facebook SSO Button -->
+            <button type="button" onclick="handleSocialLogin('Facebook')" class="flex items-center justify-center h-12 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm transition-all duration-200 hover:border-slate-300 active:scale-[0.98] shadow-sm">
+              <svg class="w-5 h-5 mr-2.5 shrink-0 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              <span>Facebook</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Phân cách HOẶC -->
+        <div class="relative flex items-center justify-center mb-6">
+          <div class="border-t border-slate-200 w-full"></div>
+          <span class="bg-white px-3 text-xs font-semibold uppercase tracking-wider text-slate-400 absolute">Hoặc</span>
+        </div>
+
+        <!-- FORM CHÍNH -->
+        <form id="form-register" novalidate class="space-y-4">
+
+          <!-- Trường 1: Họ và tên -->
+          <div class="form-group" id="group-fullname">
+            <label for="fullname" class="block text-sm font-medium text-slate-700 mb-1.5">
+              Họ và tên <span class="text-danger-500">*</span>
+            </label>
+            <div class="relative">
+              <!-- Icon người dùng -->
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+              <input 
+                type="text" 
+                id="fullname" 
+                name="fullname" 
+                placeholder="Nguyễn Văn A" 
+                autocomplete="name"
+                class="w-full h-12 pl-11 pr-10 text-base sm:text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 focus:shadow-focus-brand transition-all duration-200"
+              >
+              <!-- Icon trạng thái hợp lệ/lỗi -->
+              <div class="status-icon absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none hidden">
+                <svg class="valid-icon w-5 h-5 text-success-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <svg class="invalid-icon w-5 h-5 text-danger-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+            <!-- Báo lỗi Inline -->
+            <p class="error-text text-xs text-danger-600 mt-1.5 hidden flex items-center gap-1 font-medium">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              <span>Vui lòng nhập họ và tên hợp lệ (ít nhất 2 từ).</span>
+            </p>
+          </div>
+
+          <!-- Trường 2: Địa chỉ Email -->
+          <div class="form-group" id="group-email">
+            <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">
+              Địa chỉ Email <span class="text-danger-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                placeholder="nguyenvana@gmail.com" 
+                autocomplete="email"
+                class="w-full h-12 pl-11 pr-10 text-base sm:text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 focus:shadow-focus-brand transition-all duration-200"
+              >
+              <div class="status-icon absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none hidden">
+                <svg class="valid-icon w-5 h-5 text-success-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <svg class="invalid-icon w-5 h-5 text-danger-500 hidden" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+            <p class="error-text text-xs text-danger-600 mt-1.5 hidden flex items-center gap-1 font-medium">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              <span>Vui lòng nhập địa chỉ email hợp lệ (ví dụ: name@domain.com).</span>
+            </p>
+          </div>
+
+          <!-- Trường 3: Mật khẩu -->
+          <div class="form-group" id="group-password">
+            <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">
+              Mật khẩu <span class="text-danger-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                placeholder="Tối thiểu 8 ký tự" 
+                autocomplete="new-password"
+                class="w-full h-12 pl-11 pr-11 text-base sm:text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 focus:shadow-focus-brand transition-all duration-200"
+              >
+              <!-- Nút bật/tắt ẩn hiện mật khẩu (Eye Toggle) -->
+              <button 
+                type="button" 
+                onclick="togglePasswordVisibility('password', this)" 
+                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" 
+                title="Bật/Tắt hiển thị mật khẩu"
+              >
+                <!-- Eye Open Icon -->
+                <svg class="eye-open w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                <!-- Eye Closed Icon -->
+                <svg class="eye-closed w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- THƯỚC ĐO ĐỘ MẠNH MẬT KHẨU (PASSWORD STRENGTH METER) -->
+            <div id="password-strength-container" class="mt-2.5 space-y-1.5 hidden">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-500 font-medium">Độ mạnh mật khẩu:</span>
+                <span id="strength-label" class="font-bold text-slate-600">Yếu</span>
+              </div>
+              <div class="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+                <div id="bar-1" class="rounded-full bg-slate-200 transition-colors duration-300"></div>
+                <div id="bar-2" class="rounded-full bg-slate-200 transition-colors duration-300"></div>
+                <div id="bar-3" class="rounded-full bg-slate-200 transition-colors duration-300"></div>
+                <div id="bar-4" class="rounded-full bg-slate-200 transition-colors duration-300"></div>
+              </div>
+              <!-- Checklist tiêu chí mật khẩu -->
+              <div class="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[11px] text-slate-500" id="password-criteria">
+                <div id="rule-length" class="flex items-center gap-1.5">
+                  <span class="rule-icon text-slate-300">●</span> 8+ ký tự
+                </div>
+                <div id="rule-upper" class="flex items-center gap-1.5">
+                  <span class="rule-icon text-slate-300">●</span> Chữ hoa (A-Z)
+                </div>
+                <div id="rule-number" class="flex items-center gap-1.5">
+                  <span class="rule-icon text-slate-300">●</span> Chữ số (0-9)
+                </div>
+                <div id="rule-special" class="flex items-center gap-1.5">
+                  <span class="rule-icon text-slate-300">●</span> Ký tự đặc biệt
+                </div>
+              </div>
+            </div>
+
+            <p class="error-text text-xs text-danger-600 mt-1.5 hidden flex items-center gap-1 font-medium">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              <span>Mật khẩu phải từ 8 ký tự trở lên.</span>
+            </p>
+          </div>
+
+          <!-- Trường 4: Xác nhận mật khẩu -->
+          <div class="form-group" id="group-confirm-password">
+            <label for="confirm-password" class="block text-sm font-medium text-slate-700 mb-1.5">
+              Xác nhận mật khẩu <span class="text-danger-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+              </div>
+              <input 
+                type="password" 
+                id="confirm-password" 
+                name="confirmPassword" 
+                placeholder="Nhập lại mật khẩu" 
+                autocomplete="new-password"
+                class="w-full h-12 pl-11 pr-11 text-base sm:text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 focus:shadow-focus-brand transition-all duration-200"
+              >
+              <button 
+                type="button" 
+                onclick="togglePasswordVisibility('confirm-password', this)" 
+                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" 
+                title="Bật/Tắt hiển thị mật khẩu"
+              >
+                <svg class="eye-open w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                <svg class="eye-closed w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/>
+                </svg>
+              </button>
+            </div>
+            <p class="error-text text-xs text-danger-600 mt-1.5 hidden flex items-center gap-1 font-medium">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              <span>Mật khẩu xác nhận không trùng khớp.</span>
+            </p>
+          </div>
+
+          <!-- Checkbox: Điều khoản dịch vụ -->
+          <div class="form-group pt-1" id="group-terms">
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input 
+                  id="terms" 
+                  name="terms" 
+                  type="checkbox" 
+                  class="w-4 h-4 rounded text-brand-600 border-slate-300 focus:ring-brand-500 focus:ring-offset-0 cursor-pointer transition-colors"
+                >
+              </div>
+              <div class="ml-3 text-xs leading-normal">
+                <label for="terms" class="text-slate-600 select-none cursor-pointer">
+                  Tôi đồng ý với 
+                  <a href="#" onclick="openTermsModal(event)" class="text-brand-600 hover:text-brand-700 font-semibold underline underline-offset-2">Điều khoản dịch vụ</a> 
+                  và 
+                  <a href="#" onclick="openTermsModal(event)" class="text-brand-600 hover:text-brand-700 font-semibold underline underline-offset-2">Chính sách bảo mật</a>.
+                </label>
+              </div>
+            </div>
+            <p class="error-text text-xs text-danger-600 mt-1.5 hidden flex items-center gap-1 font-medium">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              <span>Bạn cần đồng ý với Điều khoản dịch vụ để tiếp tục.</span>
+            </p>
+          </div>
+
+          <!-- Nút bấm CTA: ĐĂNG KÝ TÀI KHOẢN (Định luật Fitts: Chiều cao 50px, full-width, touch target lớn) -->
+          <div class="pt-2">
+            <button 
+              type="submit" 
+              id="btn-submit"
+              class="w-full h-12 sm:h-13 px-6 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-base shadow-lg shadow-brand-600/25 hover:shadow-brand-600/35 active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2 focus:outline-none focus:shadow-focus-brand disabled:opacity-75 disabled:cursor-not-allowed"
+            >
+              <span id="btn-submit-text">ĐĂNG KÝ TÀI KHOẢN</span>
+              <svg id="btn-submit-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <!-- Footer Link: Đăng nhập -->
+        <div class="mt-6 text-center text-sm text-slate-600">
+          <span>Bạn đã có tài khoản?</span>
+          <button type="button" onclick="handleMockLoginRedirect()" class="text-brand-600 hover:text-brand-700 font-semibold ml-1 hover:underline underline-offset-2">
+            Đăng nhập ngay
+          </button>
+        </div>
+
+      </div>
+
+      <!-- CARD 2: TRANG XÁC NHẬN ĐĂNG KÝ THÀNH CÔNG (REGISTRATION SUCCESS PAGE) -->
+      <div id="page-success" class="bg-white rounded-2xl border border-slate-200/80 shadow-custom p-6 sm:p-8 text-center hidden transition-all duration-300">
+        
+        <!-- Animated Green Checkmark (Icon tích xanh lớn mang lại an tâm) -->
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 mb-6 relative">
+          <div class="absolute inset-0 rounded-full bg-emerald-400/20 animate-ping opacity-50"></div>
+          <svg class="w-12 h-12" viewBox="0 0 52 52" fill="none">
+            <circle class="animate-checkmark-circle" cx="26" cy="26" r="24" stroke="#10B981" stroke-width="3" stroke-miterlimit="10"/>
+            <path class="animate-checkmark-check" stroke="#10B981" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+
+        <!-- Heading & Chúc mừng -->
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Đăng ký tài khoản thành công!</h2>
+        
+        <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+          Chúc mừng <span id="success-user-name" class="font-bold text-slate-900">Nguyễn Văn A</span>, tài khoản của bạn đã được khởi tạo thành công trên hệ thống.
+        </p>
+
+        <!-- Khung thông báo gửi Email xác thực -->
+        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 mb-6 text-left">
+          <div class="flex items-start space-x-3">
+            <div class="p-2 rounded-lg bg-blue-50 text-brand-600 shrink-0 mt-0.5">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div class="text-xs text-slate-600 space-y-1">
+              <p>Chúng tôi đã gửi một email xác thực đến địa chỉ:</p>
+              <p id="success-user-email" class="font-bold text-brand-700 text-sm break-all">nguyenvana@gmail.com</p>
+              <p class="text-slate-500 pt-1 text-[11px] leading-relaxed">
+                <strong class="text-slate-700">Lưu ý:</strong> Vui lòng kiểm tra hộp thư (bao gồm cả thư rác / spam) và nhấn vào liên kết xác nhận để kích hoạt tài khoản.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary CTA: ĐĂNG NHẬP NGAY -->
+        <button 
+          type="button" 
+          onclick="handleMockLoginRedirect()"
+          class="w-full h-12 sm:h-13 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-base shadow-lg shadow-brand-600/25 hover:shadow-brand-600/35 active:scale-[0.99] transition-all duration-200 flex items-center justify-center space-x-2 mb-4"
+        >
+          <span>ĐĂNG NHẬP NGAY</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+
+        <!-- Secondary Action: Gửi lại email xác minh kèm bộ đếm ngược (Countdown Timer) -->
+        <div class="text-xs text-slate-500">
+          <span>Chưa nhận được email?</span>
+          <button 
+            type="button" 
+            id="btn-resend-email" 
+            onclick="handleResendEmail()"
+            class="text-brand-600 hover:text-brand-700 font-semibold ml-1 hover:underline underline-offset-2 disabled:text-slate-400 disabled:no-underline disabled:cursor-not-allowed"
+          >
+            Gửi lại email xác minh (<span id="resend-timer">60</span>s)
+          </button>
+        </div>
+
+        <!-- Nút quay lại trang đăng ký để kiểm thử -->
+        <div class="mt-6 pt-4 border-t border-slate-100">
+          <button 
+            type="button" 
+            onclick="switchView('registration')" 
+            class="text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors flex items-center justify-center gap-1 mx-auto"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Quay lại Form Đăng ký
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Điều khoản Dịch vụ & Chính sách Bảo mật -->
+  <div id="modal-terms" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 flex flex-col max-h-[85vh]">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <h3 class="font-bold text-slate-900 text-lg">Điều khoản dịch vụ & Chính sách bảo mật</h3>
+        <button type="button" onclick="closeTermsModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="overflow-y-auto py-4 text-xs sm:text-sm text-slate-600 space-y-3 leading-relaxed">
+        <p><strong>1. Thu thập thông tin:</strong> Chúng tôi chỉ thu thập thông tin Họ và tên, Email nhằm mục đích tạo tài khoản, gửi thông báo bảo mật và nâng cao trải nghiệm người dùng.</p>
+        <p><strong>2. Bảo vệ dữ liệu cá nhân:</strong> Mật khẩu của bạn được mã hóa bằng thuật toán băm đa tầng tiêu chuẩn quốc tế (Argon2 / bcrypt). Chúng tôi cam kết tuyệt đối không bao giờ chia sẻ dữ liệu người dùng cho bên thứ ba vì mục đích quảng cáo.</p>
+        <p><strong>3. Quyền của người dùng:</strong> Bạn có quyền yêu cầu trích xuất dữ liệu hoặc xóa vĩnh viễn tài khoản cá nhân bất kỳ lúc nào thông qua trang Quản lý Tài khoản.</p>
+      </div>
+      <div class="pt-3 border-t border-slate-200 flex justify-end">
+        <button type="button" onclick="acceptAndCloseTerms()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition-colors">
+          Tôi hiểu và đồng ý
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer bản quyền & chuẩn UX WCAG AAA -->
+  <footer class="w-full py-4 text-center text-xs text-slate-400 border-t border-slate-200/60 bg-white/40">
+    <p>© 2026 NovaSphere Inc. Tuân thủ tiêu chuẩn Tiếp cận WCAG 2.1 AAA & Fitts' Law Optimization.</p>
+  </footer>
+
+  <script>
+    /* Biến trạng thái toàn cục */
+    let currentView = 'registration'; // 'registration' | 'success'
+    let countdownInterval = null;
+    let countdownSeconds = 60;
+
+    /* Tham chiếu các phần tử DOM */
+    const pageRegistration = document.getElementById('page-registration');
+    const pageSuccess = document.getElementById('page-success');
+    const formRegister = document.getElementById('form-register');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnSubmitText = document.getElementById('btn-submit-text');
+    const btnSubmitSpinner = document.getElementById('btn-submit-spinner');
+    const btnToggleScreen = document.getElementById('btn-toggle-screen');
+    const labelToggleScreen = document.getElementById('label-toggle-screen');
+    const btnDemoFill = document.getElementById('btn-demo-fill');
+
+    // Fields
+    const inputFullname = document.getElementById('fullname');
+    const inputEmail = document.getElementById('email');
+    const inputPassword = document.getElementById('password');
+    const inputConfirmPassword = document.getElementById('confirm-password');
+    const inputTerms = document.getElementById('terms');
+
+    // Password strength meters
+    const strengthContainer = document.getElementById('password-strength-container');
+    const strengthLabel = document.getElementById('strength-label');
+    const bars = [
+      document.getElementById('bar-1'),
+      document.getElementById('bar-2'),
+      document.getElementById('bar-3'),
+      document.getElementById('bar-4')
+    ];
+    const ruleLength = document.getElementById('rule-length');
+    const ruleUpper = document.getElementById('rule-upper');
+    const ruleNumber = document.getElementById('rule-number');
+    const ruleSpecial = document.getElementById('rule-special');
+
+    /* Hệ thống Toast Message chuẩn mực thay thế alert() */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const typeStyles = {
+        success: 'bg-emerald-600 text-white shadow-emerald-500/20',
+        error: 'bg-rose-600 text-white shadow-rose-500/20',
+        info: 'bg-slate-800 text-white shadow-slate-900/20'
+      };
+
+      const iconSvgs = {
+        success: `<svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>`,
+        error: `<svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>`,
+        info: `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`
+      };
+
+      toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium shadow-lg transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto ${typeStyles[type] || typeStyles.info}`;
+      toast.innerHTML = `
+        ${iconSvgs[type] || iconSvgs.info}
+        <span class="flex-1">${message}</span>
+        <button class="ml-2 text-white/70 hover:text-white" onclick="this.parentElement.remove()">✕</button>
+      `;
+
+      container.appendChild(toast);
+      
+      // Kích hoạt transition
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      // Tự huỷ sau 4 giây
+      setTimeout(() => {
+        toast.classList.add('translate-y-2', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    /* Chuyển đổi trạng thái Ẩn/Hiện mật khẩu */
+    function togglePasswordVisibility(fieldId, buttonElement) {
+      const input = document.getElementById(fieldId);
+      const eyeOpen = buttonElement.querySelector('.eye-open');
+      const eyeClosed = buttonElement.querySelector('.eye-closed');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        eyeOpen.classList.remove('hidden');
+        eyeClosed.classList.add('hidden');
+      } else {
+        input.type = 'password';
+        eyeOpen.classList.add('hidden');
+        eyeClosed.classList.remove('hidden');
+      }
+    }
+
+    /* Chuyển đổi giữa 2 màn hình (Trang Đăng ký & Trang Thành công) */
+    function switchView(viewName) {
+      currentView = viewName;
+      if (viewName === 'success') {
+        pageRegistration.classList.add('hidden');
+        pageSuccess.classList.remove('hidden');
+        labelToggleScreen.innerText = 'Xem Trang 1 (Form Đăng ký)';
+        startCountdown();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        pageSuccess.classList.add('hidden');
+        pageRegistration.classList.remove('hidden');
+        labelToggleScreen.innerText = 'Xem Trang 2 (Thành Công)';
+        if (countdownInterval) clearInterval(countdownInterval);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    btnToggleScreen.addEventListener('click', () => {
+      switchView(currentView === 'registration' ? 'success' : 'registration');
+    });
+
+    /* Tính toán độ mạnh mật khẩu và cập nhật UI */
+    function evaluatePasswordStrength(password) {
+      if (!password) {
+        strengthContainer.classList.add('hidden');
+        return { score: 0, isValid: false };
+      }
+
+      strengthContainer.classList.remove('hidden');
+
+      const hasLength = password.length >= 8;
+      const hasUpper = /[A-Z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+      // Cập nhật checklist icon
+      updateRuleState(ruleLength, hasLength);
+      updateRuleState(ruleUpper, hasUpper);
+      updateRuleState(ruleNumber, hasNumber);
+      updateRuleState(ruleSpecial, hasSpecial);
+
+      let score = 0;
+      if (hasLength) score++;
+      if (hasUpper) score++;
+      if (hasNumber) score++;
+      if (hasSpecial) score++;
+
+      // Reset màu thanh
+      bars.forEach(b => {
+        b.className = 'rounded-full bg-slate-200 transition-colors duration-300';
+      });
+
+      if (score === 1) {
+        strengthLabel.innerText = 'Rất yếu';
+        strengthLabel.className = 'font-bold text-rose-500';
+        bars[0].classList.replace('bg-slate-200', 'bg-rose-500');
+      } else if (score === 2) {
+        strengthLabel.innerText = 'Trung bình';
+        strengthLabel.className = 'font-bold text-amber-500';
+        bars[0].classList.replace('bg-slate-200', 'bg-amber-500');
+        bars[1].classList.replace('bg-slate-200', 'bg-amber-500');
+      } else if (score === 3) {
+        strengthLabel.innerText = 'Khá mạnh';
+        strengthLabel.className = 'font-bold text-blue-500';
+        bars[0].classList.replace('bg-slate-200', 'bg-blue-500');
+        bars[1].classList.replace('bg-slate-200', 'bg-blue-500');
+        bars[2].classList.replace('bg-slate-200', 'bg-blue-500');
+      } else if (score >= 4) {
+        strengthLabel.innerText = 'Rất mạnh';
+        strengthLabel.className = 'font-bold text-emerald-600';
+        bars.forEach(b => b.classList.replace('bg-slate-200', 'bg-emerald-500'));
+      }
+
+      return { score, isValid: hasLength };
+    }
+
+    function updateRuleState(ruleElement, passed) {
+      const icon = ruleElement.querySelector('.rule-icon');
+      if (passed) {
+        ruleElement.classList.add('text-emerald-700', 'font-medium');
+        ruleElement.classList.remove('text-slate-500');
+        icon.innerText = '✓';
+        icon.className = 'rule-icon text-emerald-600 font-bold';
+      } else {
+        ruleElement.classList.remove('text-emerald-700', 'font-medium');
+        ruleElement.classList.add('text-slate-500');
+        icon.innerText = '●';
+        icon.className = 'rule-icon text-slate-300';
+      }
+    }
+
+    /* Xử lý hiển thị trực quan trạng thái ô nhập: Default / Error / Success */
+    function setFieldState(groupId, status, message = '') {
+      const group = document.getElementById(groupId);
+      if (!group) return;
+
+      const input = group.querySelector('input');
+      const errorText = group.querySelector('.error-text');
+      const statusIcon = group.querySelector('.status-icon');
+      const validIcon = group.querySelector('.valid-icon');
+      const invalidIcon = group.querySelector('.invalid-icon');
+
+      // Reset class
+      input.classList.remove('border-danger-500', 'border-success-500', 'border-slate-300', 'focus:border-brand-600', 'focus:shadow-focus-brand', 'focus:shadow-focus-error', 'focus:shadow-focus-success');
+
+      if (status === 'error') {
+        input.classList.add('border-danger-500', 'focus:shadow-focus-error');
+        if (errorText) {
+          errorText.classList.remove('hidden');
+          if (message) errorText.querySelector('span').innerText = message;
+        }
+        if (statusIcon) {
+          statusIcon.classList.remove('hidden');
+          if (validIcon) validIcon.classList.add('hidden');
+          if (invalidIcon) invalidIcon.classList.remove('hidden');
+        }
+      } else if (status === 'success') {
+        input.classList.add('border-success-500', 'focus:shadow-focus-success');
+        if (errorText) errorText.classList.add('hidden');
+        if (statusIcon) {
+          statusIcon.classList.remove('hidden');
+          if (validIcon) validIcon.classList.remove('hidden');
+          if (invalidIcon) invalidIcon.classList.add('hidden');
+        }
+      } else {
+        // Trạng thái mặc định
+        input.classList.add('border-slate-300', 'focus:border-brand-600', 'focus:shadow-focus-brand');
+        if (errorText) errorText.classList.add('hidden');
+        if (statusIcon) statusIcon.classList.add('hidden');
+      }
+    }
+
+    /* Kiểm tra tính hợp lệ từng trường đơn lẻ */
+    function validateFullname(showState = true) {
+      const value = inputFullname.value.trim();
+      const parts = value.split(/\s+/).filter(Boolean);
+      const isValid = parts.length >= 2 && value.length >= 3;
+
+      if (showState) {
+        if (!value) {
+          setFieldState('group-fullname', 'error', 'Vui lòng nhập họ và tên của bạn.');
+        } else if (!isValid) {
+          setFieldState('group-fullname', 'error', 'Họ và tên cần ít nhất 2 từ (ví dụ: Nguyễn Văn A).');
+        } else {
+          setFieldState('group-fullname', 'success');
+        }
+      }
+      return isValid;
+    }
+
+    function validateEmail(showState = true) {
+      const value = inputEmail.value.trim();
+      // Regex chuẩn RFC 5322 cơ bản cho email thực tế
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const isValid = emailRegex.test(value);
+
+      if (showState) {
+        if (!value) {
+          setFieldState('group-email', 'error', 'Địa chỉ email không được để trống.');
+        } else if (!isValid) {
+          setFieldState('group-email', 'error', 'Email không hợp lệ (ví dụ: nguyenvana@gmail.com).');
+        } else {
+          setFieldState('group-email', 'success');
+        }
+      }
+      return isValid;
+    }
+
+    function validatePassword(showState = true) {
+      const value = inputPassword.value;
+      const { isValid } = evaluatePasswordStrength(value);
+
+      if (showState) {
+        if (!value) {
+          setFieldState('group-password', 'error', 'Vui lòng thiết lập mật khẩu.');
+        } else if (!isValid) {
+          setFieldState('group-password', 'error', 'Mật khẩu phải chứa ít nhất 8 ký tự.');
+        } else {
+          setFieldState('group-password', 'success');
+        }
+      }
+      return isValid;
+    }
+
+    function validateConfirmPassword(showState = true) {
+      const pass = inputPassword.value;
+      const confirm = inputConfirmPassword.value;
+      const isValid = confirm && pass === confirm;
+
+      if (showState) {
+        if (!confirm) {
+          setFieldState('group-confirm-password', 'error', 'Vui lòng xác nhận lại mật khẩu.');
+        } else if (!isValid) {
+          setFieldState('group-confirm-password', 'error', 'Mật khẩu xác nhận không trùng khớp.');
+        } else {
+          setFieldState('group-confirm-password', 'success');
+        }
+      }
+      return isValid;
+    }
+
+    function validateTerms(showState = true) {
+      const isChecked = inputTerms.checked;
+      const errorText = document.querySelector('#group-terms .error-text');
+      if (showState) {
+        if (!isChecked) {
+          errorText.classList.remove('hidden');
+        } else {
+          errorText.classList.add('hidden');
+        }
+      }
+      return isChecked;
+    }
+
+    /* Gắn sự kiện real-time / inline on blur & on input */
+    inputFullname.addEventListener('blur', () => validateFullname(true));
+    inputFullname.addEventListener('input', () => {
+      if (inputFullname.value.trim().split(/\s+/).length >= 2) {
+        validateFullname(true);
+      }
+    });
+
+    inputEmail.addEventListener('blur', () => validateEmail(true));
+    inputEmail.addEventListener('input', () => {
+      if (inputEmail.value.includes('@') && inputEmail.value.includes('.')) {
+        validateEmail(true);
+      }
+    });
+
+    inputPassword.addEventListener('input', () => {
+      evaluatePasswordStrength(inputPassword.value);
+      if (inputPassword.value.length >= 8) {
+        setFieldState('group-password', 'success');
+      }
+      if (inputConfirmPassword.value) {
+        validateConfirmPassword(true);
+      }
+    });
+    inputPassword.addEventListener('blur', () => validatePassword(true));
+
+    inputConfirmPassword.addEventListener('input', () => {
+      if (inputConfirmPassword.value.length >= inputPassword.value.length) {
+        validateConfirmPassword(true);
+      }
+    });
+    inputConfirmPassword.addEventListener('blur', () => validateConfirmPassword(true));
+
+    inputTerms.addEventListener('change', () => validateTerms(true));
+
+    /* Xử lý Submit toàn Form */
+    formRegister.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Kiểm tra toàn diện
+      const isNameValid = validateFullname(true);
+      const isEmailValid = validateEmail(true);
+      const isPassValid = validatePassword(true);
+      const isConfirmValid = validateConfirmPassword(true);
+      const isTermsValid = validateTerms(true);
+
+      const isAllValid = isNameValid && isEmailValid && isPassValid && isConfirmValid && isTermsValid;
+
+      if (!isAllValid) {
+        // Hiệu ứng rung form để gây chú ý
+        pageRegistration.classList.add('shake');
+        setTimeout(() => pageRegistration.classList.remove('shake'), 400);
+
+        // Tự động cuộn và focus vào ô lỗi đầu tiên theo chuẩn UX
+        if (!isNameValid) inputFullname.focus();
+        else if (!isEmailValid) inputEmail.focus();
+        else if (!isPassValid) inputPassword.focus();
+        else if (!isConfirmValid) inputConfirmPassword.focus();
+        else if (!isTermsValid) inputTerms.focus();
+
+        showToast('Vui lòng kiểm tra lại các trường thông tin báo lỗi màu đỏ.', 'error');
+        return;
+      }
+
+      // Mô phỏng quá trình gửi dữ liệu lên Server (Loading state)
+      btnSubmit.disabled = true;
+      btnSubmitText.innerText = 'Đang khởi tạo tài khoản...';
+      btnSubmitSpinner.classList.remove('hidden');
+
+      setTimeout(() => {
+        // Khôi phục nút
+        btnSubmit.disabled = false;
+        btnSubmitText.innerText = 'ĐĂNG KÝ TÀI KHOẢN';
+        btnSubmitSpinner.classList.add('hidden');
+
+        // Cập nhật thông tin động sang Trang Thành công
+        const userName = inputFullname.value.trim();
+        const userEmail = inputEmail.value.trim();
+
+        document.getElementById('success-user-name').innerText = userName;
+        document.getElementById('success-user-email').innerText = userEmail;
+
+        showToast('Tài khoản đã được đăng ký thành công!', 'success');
+        switchView('success');
+      }, 900);
+    });
+
+    /* Đếm ngược 60 giây cho nút Gửi lại email xác minh */
+    function startCountdown() {
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownSeconds = 60;
+      const btnResend = document.getElementById('btn-resend-email');
+      const timerDisplay = document.getElementById('resend-timer');
+
+      btnResend.disabled = true;
+      timerDisplay.innerText = countdownSeconds;
+
+      countdownInterval = setInterval(() => {
+        countdownSeconds--;
+        timerDisplay.innerText = countdownSeconds;
+
+        if (countdownSeconds <= 0) {
+          clearInterval(countdownInterval);
+          btnResend.disabled = false;
+          btnResend.innerHTML = 'Gửi lại email xác minh ngay';
+        }
+      }, 1000);
+    }
+
+    function handleResendEmail() {
+      const btnResend = document.getElementById('btn-resend-email');
+      btnResend.innerHTML = 'Gửi lại email xác minh (<span id="resend-timer">60</span>s)';
+      showToast('Một email kích hoạt mới đã được gửi vào hộp thư của bạn!', 'success');
+      startCountdown();
+    }
+
+    /* Mô phỏng Đăng nhập bằng Mạng Xã hội (Social Login) */
+    function handleSocialLogin(provider) {
+      showToast(`Đang kết nối xác thực tài khoản qua ${provider}...`, 'info');
+      setTimeout(() => {
+        inputFullname.value = provider === 'Google' ? 'Trần Minh Hoàng' : 'Lê Thu Thảo';
+        inputEmail.value = provider === 'Google' ? 'hoang.tran@gmail.com' : 'thao.le@facebook.com';
+        inputPassword.value = 'NovaSphere@2026';
+        inputConfirmPassword.value = 'NovaSphere@2026';
+        inputTerms.checked = true;
+
+        validateFullname(true);
+        validateEmail(true);
+        validatePassword(true);
+        validateConfirmPassword(true);
+        validateTerms(true);
+
+        showToast(`Đã đồng bộ thông tin xác thực từ ${provider}! Bạn có thể nhấn Đăng ký ngay.`, 'success');
+      }, 700);
+    }
+
+    /* Điền sẵn dữ liệu mẫu phục vụ kiểm thử nhanh (Demo Helper) */
+    btnDemoFill.addEventListener('click', () => {
+      inputFullname.value = 'Nguyễn Văn An';
+      inputEmail.value = 'nguyenvanan.dev@gmail.com';
+      inputPassword.value = 'NovaSecure#2026';
+      inputConfirmPassword.value = 'NovaSecure#2026';
+      inputTerms.checked = true;
+
+      validateFullname(true);
+      validateEmail(true);
+      validatePassword(true);
+      validateConfirmPassword(true);
+      validateTerms(true);
+
+      showToast('Đã điền thông tin hợp lệ mẫu!', 'info');
+    });
+
+    /* Mô phỏng nút Đăng nhập ngay */
+    function handleMockLoginRedirect() {
+      showToast('Đang chuyển hướng sang cổng đăng nhập SSO...', 'info');
+      setTimeout(() => {
+        switchView('registration');
+      }, 800);
+    }
+
+    /* Modal Điều khoản Dịch vụ */
+    function openTermsModal(event) {
+      if (event) event.preventDefault();
+      document.getElementById('modal-terms').classList.remove('hidden');
+    }
+
+    function closeTermsModal() {
+      document.getElementById('modal-terms').classList.add('hidden');
+    }
+
+    function acceptAndCloseTerms() {
+      inputTerms.checked = true;
+      validateTerms(true);
+      closeTermsModal();
+      showToast('Bạn đã đồng ý với Điều khoản dịch vụ.', 'success');
+    }
+  </script>
+</body>
+</html>
